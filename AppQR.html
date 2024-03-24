@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Código QR</title>
+<!-- Estilos CSS -->
+<style>
+/* Estilos CSS personalizados */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f2f2f2;
+}
+
+#formulario {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 90%;
+}
+
+#formulario label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#formulario input[type="text"] {
+    width: calc(100% - 12px);
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#formulario button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+#formulario button:hover {
+    background-color: #45a049;
+}
+
+#qrContainer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#botonDescargar {
+    display: none;
+}
+</style>
+</head>
+<body>
+<div id="formulario">
+    <form id="dataForm">
+        <label for="equipo">Equipo:</label>
+        <input type="text" id="equipo" name="equipo"><br>
+        <label for="tag">Tag:</label>
+        <input type="text" id="tag" name="tag"><br>
+        <label for="estado">Estado:</label>
+        <input type="text" id="estado" name="estado"><br>
+        <label for="sistema">Sistema:</label>
+        <input type="text" id="sistema" name="sistema"><br>
+        <label for="unidad">Unidad:</label>
+        <input type="text" id="unidad" name="unidad"><br>
+        <label for="observacion">Observación:</label>
+        <input type="text" id="observacion" name="observacion"><br>
+        <button type="button" onclick="generarCodigoQR()">Generar Código QR</button>
+    </form>
+    <div id="qrContainer">
+        <!-- Aquí se mostrará el código QR generado -->
+    </div>
+    <button id="botonDescargar" onclick="descargarCodigoQR()">Descargar</button>
+</div>
+
+<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+<script>
+function generarCodigoQR() {
+    var formData = new FormData(document.getElementById("dataForm"));
+    var data = {};
+    for (var pair of formData.entries()) {
+        data[pair[0]] = pair[1];
+    }
+    
+    var estado = document.getElementById("estado").value.toLowerCase().trim();
+    var qrColor = estado.includes("bueno") || estado.includes("nuevo") || estado.includes("bien") || estado.includes("reparado") ? "#00FF00" : "#FF0000";
+    
+    var qrText = JSON.stringify(data); // Convertir los datos a JSON
+    var qrContainer = document.getElementById("qrContainer");
+    qrContainer.innerHTML = ""; // Limpiar el contenedor previo
+    var qr = new QRCode(qrContainer, {
+        text: qrText,
+        width: 160,
+        height: 160,
+        colorDark: qrColor,
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    // Mostrar el botón de descarga después de generar el código QR
+    document.getElementById("botonDescargar").style.display = "block";
+}
+
+function descargarCodigoQR() {
+    // Obtener la imagen del código QR
+    var qrImage = document.getElementById("qrContainer").querySelector('img').src;
+
+    // Crear un enlace temporal para la descarga
+    var link = document.createElement("a");
+    link.href = qrImage;
+    link.download = "codigo_qr.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
